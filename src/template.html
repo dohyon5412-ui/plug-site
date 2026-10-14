@@ -60,6 +60,17 @@ a{color:inherit}
 .rail-grp[aria-expanded="true"] .chev{transform:rotate(90deg)}
 .rail-grp .n{margin-left:auto;font-size:12px;color:var(--ink-3);font-weight:500}
 .rail-grp-body{margin:2px 0 4px 14px;padding-left:8px;border-left:2px solid var(--line)}
+.rail-sec{margin-top:18px}
+.rail-sec-h{display:flex;align-items:center;gap:8px;width:100%;border:0;background:none;text-align:left;padding:12px 12px;border-radius:12px;font-size:17px;font-weight:800;line-height:1.35;color:var(--ink);letter-spacing:-.01em}
+.rail-sec-h:hover{background:var(--surface-2)}
+.rail-sec-h.has-cur{color:var(--brand-ink)}
+.rail-sec-h .chev{flex:none;transition:transform .15s;color:var(--ink-3)}
+.rail-sec-h[aria-expanded="true"] .chev{transform:rotate(90deg)}
+.rail-sec-h .n{margin-left:auto;font-size:12px;color:var(--ink-3);font-weight:500}
+.rail-sec-body{margin:0 0 4px 8px}
+.rail-sec .rail-group{margin-top:2px}
+.sec-big{font-weight:800;font-size:clamp(30px,4vw,40px);letter-spacing:-.03em;margin:64px 0 -24px;line-height:1.2;color:var(--brand-ink)}
+.grp-h.in-sec{font-size:clamp(22px,2.8vw,28px)}
 .rail-cat{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:10px;text-decoration:none;font-weight:600;font-size:15px;line-height:1.4}
 .rail-cat .n{margin-left:auto;font-size:12px;color:var(--ink-3);font-weight:500;font-variant-numeric:tabular-nums}
 .dot{width:10px;height:10px;border-radius:50%;flex:none;background:var(--c,var(--brand))}
@@ -364,6 +375,15 @@ mark{background:color-mix(in srgb,var(--accent) 55%,transparent);color:inherit;b
 .apple .rail-posts a.cur{background:color-mix(in srgb,var(--brand) 12%,var(--tint-base));color:var(--brand-ink)}
 .apple .rail-group.named{border-radius:16px;box-shadow:var(--glass-edge),var(--sh-1),var(--glass-hl);padding:4px;margin-top:12px}
 .apple .rail-grp{border-radius:12px;font-weight:700;color:var(--ink)}
+.apple .rail-sec{background:var(--glass);border:var(--glass-border);-webkit-backdrop-filter:saturate(160%) blur(18px);backdrop-filter:saturate(160%) blur(18px);border-radius:18px;box-shadow:var(--glass-edge),var(--sh-1),var(--glass-hl);padding:4px;margin-top:12px}
+.apple .rail-sec-h{border-radius:14px}
+.apple .rail-sec-h:hover{background:var(--hover)}
+.apple .rail-sec-h.has-cur{color:var(--brand)}
+.apple .rail-sec .rail-group.named{background:none;border:0;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none;padding:0;margin-top:0;border-radius:12px}
+.apple .rail-sec .rail-grp{font-size:15px;font-weight:650}
+.apple .sec-big{color:var(--brand)}
+.apple .grp-h.in-sec{font-size:clamp(22px,2.8vw,28px);margin-top:40px}
+.apple .sec-big{margin:72px 0 -20px}
 .apple .rail-grp-body{border-left:0;margin:0 0 4px;padding-left:4px}
 .apple .rail-cat{border-radius:10px;font-weight:600}
 .apple .rail-posts{border-left:0;margin-left:22px;padding-left:0}
@@ -473,7 +493,7 @@ var SAVED=dataEl.textContent;
 var state=JSON.parse(SAVED);
 var BASE=hash(SAVED);
 var DRAFT_KEY='plug-draft';
-var ui={edit:false,canEdit:false,artifact:null,sheet:null,tab:'site',postIdx:null,q:'',notice:null,armed:null,toast:null,menu:false,searchOpen:false,quiz:{},openGroups:{}};
+var ui={edit:false,canEdit:false,artifact:null,sheet:null,tab:'site',postIdx:null,q:'',notice:null,armed:null,toast:null,menu:false,searchOpen:false,quiz:{},openGroups:{},openSecs:{}};
 var root=document.getElementById('root');
 var PRESETS=[
   {id:'plug',name:'PLUG 기본',brand:'#1947ba',accent:'#ffb71b',header:'#eef3fc'},
@@ -493,7 +513,8 @@ function catById(id){for(var i=0;i<state.categories.length;i++)if(state.categori
 function postsOf(cid){return state.posts.filter(function(p){return p.cat===cid})}
 function postIndex(id){for(var i=0;i<state.posts.length;i++)if(state.posts[i].id===id)return i;return -1}
 function dirty(){return JSON.stringify(state)!==SAVED}
-function groups(){var g=[],m={};state.categories.forEach(function(c){var k=c.group||'';if(!(k in m)){m[k]=g.length;g.push({name:k,cats:[]})}g[m[k]].cats.push(c)});return g}
+function groups(){var g=[],m={};state.categories.forEach(function(c){var k=(c.section||'')+'\u0001'+(c.group||'');if(!(k in m)){m[k]=g.length;g.push({name:c.group||'',sec:c.section||'',cats:[]})}g[m[k]].cats.push(c)});return g}
+function sections(){var s=[],m={};groups().forEach(function(g,gi){g.gi=gi;var k=g.sec;if(!(k in m)){m[k]=s.length;s.push({name:k,groups:[]})}s[m[k]].groups.push(g)});return s}
 function orderedPosts(){var out=[];state.categories.forEach(function(c){out=out.concat(postsOf(c.id))});return out}
 
 function applyTheme(){
@@ -545,12 +566,15 @@ function header(){
 function rail(r){
   var curCat=r.v==='cat'?r.id:(r.v==='post'?((state.posts[postIndex(r.id)]||{}).cat):null);
   var h='<nav class="rail'+(ui.menu?' open':'')+'" aria-label="카테고리"><a class="rail-home'+(r.v==='home'?' cur':'')+'" href="#">'+IC.home+'처음으로</a>';
-  groups().forEach(function(g,gi){
+  var CHEV='<svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>';
+  function grpHtml(g){
+    var gi=g.gi;
     var hasCur=g.cats.some(function(c){return c.id===curCat});
-    var open=!g.name||(g.name in ui.openGroups?ui.openGroups[g.name]:hasCur);
-    h+='<div class="rail-group'+(g.name?' named':'')+'">';
-    if(g.name)h+='<button class="rail-grp'+(hasCur?' has-cur':'')+'" data-act="grp" data-gi="'+gi+'" aria-expanded="'+open+'"><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg><span>'+esc(g.name)+'</span><span class="n">'+g.cats.length+'</span></button>';
-    if(!open){h+='</div>';return}
+    var key=g.sec+'\u0001'+g.name;
+    var open=!g.name||(key in ui.openGroups?ui.openGroups[key]:hasCur);
+    var h='<div class="rail-group'+(g.name?' named':'')+'">';
+    if(g.name)h+='<button class="rail-grp'+(hasCur?' has-cur':'')+'" data-act="grp" data-gi="'+gi+'" aria-expanded="'+open+'">'+CHEV+'<span>'+esc(g.name)+'</span><span class="n">'+g.cats.length+'</span></button>';
+    if(!open)return h+'</div>';
     if(g.name)h+='<div class="rail-grp-body">';
     g.cats.forEach(function(c){
       var ps=postsOf(c.id);
@@ -558,6 +582,14 @@ function rail(r){
       if(c.id===curCat&&ps.length){h+='<ul class="rail-posts">';ps.forEach(function(p){h+='<li><a href="#p-'+esc(p.id)+'"'+(r.v==='post'&&r.id===p.id?' class="cur"':'')+'>'+(p.label?'<b>'+esc(p.label)+'</b>':'')+esc(p.title)+'</a></li>'});h+='</ul>'}
     });
     if(g.name)h+='</div>';
+    return h+'</div>';
+  }
+  sections().forEach(function(s,si){
+    if(!s.name){s.groups.forEach(function(g){h+=grpHtml(g)});return}
+    var hasCur=s.groups.some(function(g){return g.cats.some(function(c){return c.id===curCat})});
+    var open=s.name in ui.openSecs?ui.openSecs[s.name]:hasCur;
+    h+='<div class="rail-sec"><button class="rail-sec-h'+(hasCur?' has-cur':'')+'" data-act="sec" data-si="'+si+'" aria-expanded="'+open+'">'+CHEV+'<span>'+esc(s.name)+'</span><span class="n">'+s.groups.length+'</span></button>';
+    if(open){h+='<div class="rail-sec-body">';s.groups.forEach(function(g){h+=grpHtml(g)});h+='</div>'}
     h+='</div>';
   });
   return h+'</nav>';
@@ -581,8 +613,11 @@ function homeView(){
   var h='<section class="hero"><div class="eyebrow">'+esc(s.tagline)+'</div><h1>'+esc(s.heading)+'</h1><p>'+esc(s.intro)+'</p>'+
    '<div class="stats"><div class="stat"><b>'+state.categories.length+'</b><span>개 주제</span></div><div class="stat"><b>'+state.posts.length+'</b><span>개 자료</span></div><div class="stat"><b>'+nS+'</b><span>개 세부 내용</span></div><div class="stat"><b>'+nQ+'</b><span>개 확인 퀴즈</span></div></div>'+
    (ui.edit?'<div class="inline-edit"><button class="btn pri" data-act="new-post">새 자료 추가</button><button class="btn ghost" data-act="open-settings" data-tab="site">사이트 문구 수정</button></div>':'')+'</section>';
+  var lastSec=null;
   groups().forEach(function(g){
-   if(g.name)h+='<h2 class="grp-h">'+esc(g.name)+'</h2>';
+   if(g.sec&&g.sec!==lastSec)h+='<h2 class="sec-big">'+esc(g.sec)+'</h2>';
+   lastSec=g.sec;
+   if(g.name)h+='<h2 class="grp-h'+(g.sec?' in-sec':'')+'">'+esc(g.name)+'</h2>';
    g.cats.forEach(function(c){
     var ps=postsOf(c.id);
     h+='<div class="sec-h" style="--c:'+esc(safeColor(c.color,'#1947ba'))+'"><span class="dot"></span><h2>'+esc(c.name)+'</h2><p>'+esc(c.desc||'')+'</p><a href="#c-'+esc(c.id)+'">전체 보기</a></div>';
@@ -593,7 +628,7 @@ function homeView(){
 }
 function catView(c){
   var ps=postsOf(c.id);
-  return '<div class="page-h"><div class="crumb"><a href="#">처음</a><span>›</span>'+esc(c.group||'')+'</div><h1>'+esc(c.name)+'</h1><p>'+esc(c.desc||'')+'</p>'+
+  return '<div class="page-h"><div class="crumb"><a href="#">처음</a>'+(c.section?'<span>›</span>'+esc(c.section):'')+(c.group?'<span>›</span>'+esc(c.group):'')+'</div><h1>'+esc(c.name)+'</h1><p>'+esc(c.desc||'')+'</p>'+
    (ui.edit?'<div class="inline-edit"><button class="btn pri" data-act="new-post" data-cat="'+esc(c.id)+'">이 주제에 자료 추가</button><button class="btn ghost" data-act="open-settings" data-tab="cats">카테고리 설정</button></div>':'')+'</div>'+
    (ps.length?'<div class="cards">'+ps.map(postCard).join('')+'</div>':'<p class="empty">아직 등록된 자료가 없어요.</p>');
 }
@@ -750,12 +785,12 @@ function edColors(){var t=state.theme;
   return h;
 }
 function edCats(){
-  var h='<p style="margin:0 0 12px;color:var(--ink-2);font-size:14px">카테고리는 왼쪽 메뉴와 첫 화면에 이 순서대로 보여요. ‘묶음’이 같은 카테고리끼리 메뉴에서 함께 묶여요.</p>';
+  var h='<p style="margin:0 0 12px;color:var(--ink-2);font-size:14px">카테고리는 왼쪽 메뉴와 첫 화면에 이 순서대로 보여요. ‘묶음’이 같은 카테고리끼리 메뉴에서 함께 묶이고, ‘큰 묶음’이 같은 묶음끼리 다시 한 번 묶여요.</p>';
   state.categories.forEach(function(c,i){var n=postsOf(c.id).length;
     h+='<div class="box"><div class="box-h"><span class="dot" style="--c:'+esc(safeColor(c.color,'#1947ba'))+'"></span><strong>'+esc(c.name||'(이름 없음)')+' <small style="color:var(--ink-3);font-weight:500">· 자료 '+n+'개</small></strong>'+
      '<button class="mini" data-act="cat-up" data-i="'+i+'"'+(i===0?' disabled':'')+' aria-label="위로">▲</button><button class="mini" data-act="cat-down" data-i="'+i+'"'+(i===state.categories.length-1?' disabled':'')+' aria-label="아래로">▼</button>'+
      '<button class="btn danger'+(ui.armed==='cat'+i?' arm':'')+'" data-act="cat-del" data-i="'+i+'">'+(ui.armed==='cat'+i?(n?'자료 '+n+'개를 다른 곳으로 옮기고 삭제':'정말 삭제'):'삭제')+'</button></div>'+
-     '<div class="row">'+fText('이름','categories.'+i+'.name',c.name)+fText('묶음 (메뉴 그룹)','categories.'+i+'.group',c.group||'')+'</div>'+
+     '<div class="row">'+fText('이름','categories.'+i+'.name',c.name)+fText('묶음 (메뉴 그룹)','categories.'+i+'.group',c.group||'')+fText('큰 묶음','categories.'+i+'.section',c.section||'')+'</div>'+
      fText('설명','categories.'+i+'.desc',c.desc||'')+
      '<div class="f"><span class="lbl">색</span><div class="color-f"><input type="color" id="cc-'+i+'" data-catcolor="'+i+'" value="'+esc(safeColor(c.color,'#1947ba'))+'" aria-label="카테고리 색"></div></div></div>';
   });
@@ -855,7 +890,8 @@ root.addEventListener('click',function(ev){
   var armedBefore=ui.armed;if(['cat-del','sec-del','quiz-del','post-del','discard'].indexOf(a)<0)ui.armed=null;
   switch(a){
    case 'menu':ui.menu=true;render();break;
-   case 'grp':var gg=groups()[+d('gi')];if(gg){var cur=t.getAttribute('aria-expanded')==='true';ui.openGroups[gg.name]=!cur;var rl=document.querySelector('.rail');var sc=rl?rl.scrollTop:0;render();var nr=document.querySelector('.rail');if(nr)nr.scrollTop=sc}break;
+   case 'sec':var ss=sections()[+d('si')];if(ss){var cs=t.getAttribute('aria-expanded')==='true';ui.openSecs[ss.name]=!cs;var rl2=document.querySelector('.rail');var sc2=rl2?rl2.scrollTop:0;render();var nr2=document.querySelector('.rail');if(nr2)nr2.scrollTop=sc2}break;
+   case 'grp':var gg=groups()[+d('gi')];if(gg){var cur=t.getAttribute('aria-expanded')==='true';ui.openGroups[gg.sec+'\u0001'+gg.name]=!cur;var rl=document.querySelector('.rail');var sc=rl?rl.scrollTop:0;render();var nr=document.querySelector('.rail');if(nr)nr.scrollTop=sc}break;
    case 'close-menu':ui.menu=false;render();break;
    case 'search-toggle':ui.searchOpen=!ui.searchOpen;render();if(ui.searchOpen){var q=document.getElementById('q');if(q)q.focus()}break;
    case 'clear-search':ui.q='';ui.searchOpen=false;setTimeout(render,0);break;
@@ -874,7 +910,7 @@ root.addEventListener('click',function(ev){
    case 'preset':var p=PRESETS.filter(function(x){return x.id===d('id')})[0];if(p){state.theme={brand:p.brand,accent:p.accent,header:p.header,preset:p.id};applyTheme();changed(true)}break;
    case 'cat-up':move(state.categories,+d('i'),-1);changed(true);break;
    case 'cat-down':move(state.categories,+d('i'),1);changed(true);break;
-   case 'cat-add':state.categories.push({id:uid('c'),name:'새 카테고리',group:(state.categories[state.categories.length-1]||{}).group||'',color:CAT_COLORS[state.categories.length%CAT_COLORS.length],desc:''});changed(true);setTimeout(function(){var b=document.querySelector('.sheet-b');if(b)b.scrollTop=b.scrollHeight},0);break;
+   case 'cat-add':state.categories.push({id:uid('c'),name:'새 카테고리',group:(state.categories[state.categories.length-1]||{}).group||'',section:(state.categories[state.categories.length-1]||{}).section||'',color:CAT_COLORS[state.categories.length%CAT_COLORS.length],desc:''});changed(true);setTimeout(function(){var b=document.querySelector('.sheet-b');if(b)b.scrollTop=b.scrollHeight},0);break;
    case 'cat-del':var ci=+d('i');if(armedBefore!=='cat'+ci){ui.armed='cat'+ci;render();break}
      var gone=state.categories[ci];var n=postsOf(gone.id).length;
      if(n&&state.categories.length<2){ui.armed=null;toast('자료가 있는 마지막 카테고리는 삭제할 수 없어요.');break}
