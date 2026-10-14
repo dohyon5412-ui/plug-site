@@ -54,6 +54,15 @@ elif CH == 3:
     START = 294; SUMMARK = lambda t: t == 'Ⅲ장 종합'; SECRE = r'^(\d{1,2})\.\s+(.+)$'
     NEW_TITLES = SECS0[:]
     SUMTITLE = '생화학 정보를 아이 이해에 쓰는 원칙'
+elif CH == 4:
+    NEW_TITLES = ['아동발달의 기본 관점과 주요 발달이론', '신경발달장애를 이해하는 기본 관점', '자폐스펙트럼장애(ASD)의 이해',
+                  '주의력결핍 과잉행동장애(ADHD)의 이해', '틱장애와 뚜렛증후군의 이해', '발달성협응장애(DCD)와 운동발달의 어려움',
+                  '지적발달장애·전반적 발달지연·경계선 지적기능', '의사소통장애와 특정학습장애의 이해', '사회적 기능과 사회성 발달의 이해',
+                  '신경발달장애의 공존과 중첩', '행동 및 정서조절의 어려움', '함께 나타날 수 있는 신경학적·의학적 상태',
+                  '약물치료를 신경회로와 기능의 관점에서 이해하기', '아동의 행동을 신경발달적 관점에서 관찰하기', '아동의 기능적 프로파일과 임상적 통합']
+    SECS0 = NEW_TITLES[:]
+    START = 346; SUMMARK = lambda t: t == 'Ⅳ장 종합'; SECRE = r'^(\d{1,2})절\.\s+(.+)$'
+    SUMTITLE = '신경발달장애를 현장에서 이해하는 기본 원칙'
 else:
     SECS0 = ['대뇌피질의 구조와 기능', '전두엽과 실행기능·행동조절', '두정엽과 체성감각·신체도식·공간처리', '측두엽과 청각·언어·기억',
              '후두엽과 시각정보 처리', '기저핵과 운동·행동 선택·습관', '소뇌와 타이밍·예측·오류수정', '시상과 감각정보 조절',
@@ -67,7 +76,7 @@ def is_head(l, summ):
     t = l.strip()
     if re.match(r'^\d+-\d+\.\s', t) or re.match(r'^\[[^\]]+\]$', t) or SUMMARK(t) or (CH == 3 and t == '참고문헌'): return True
     m = re.match(SECRE, t)
-    if m and m.group(2).strip() in SECS0: return True
+    if m and (m.group(2).strip() in SECS0 or (CH == 4 and 1 <= int(m.group(1)) <= 15)): return True
     if summ and re.match(r'^\d{1,2}\.\s', t): return True
     return False
 paras = []; cur = []; summ = False
@@ -85,6 +94,7 @@ if cur: paras.append(cur)
 SECS = SECS0
 EXCLUDE = re.compile(r'참고문헌|장 핵심 결론|종합으로의 연결|장과의 연결|장 핵심 정리|학습목표|다음 절과의 연결|다음 장과의 연결|약리학적 연결|약물치료를 통해 이해하는 원칙|합성에 관여하는 주요 요소|주요 합성 경로|주요 합성 및 대사|\d절 핵심 정리')
 CAUTION = re.compile(r'해석상 주의|피해야 할|권장되는')
+if CH == 4: EXCLUDE = re.compile(EXCLUDE.pattern + r'|Ⅳ장 핵심 결론')
 posts = []; post = None; sec = None; box = None; in_summary = False; stop = False
 
 def new_sec(title):
@@ -95,12 +105,12 @@ def new_sec(title):
 for p in paras:
     first = p[0].strip()
     if stop: break
-    if re.match(r'^\[(Ⅰ|Ⅱ|Ⅲ)장 핵심 정리\]$', first) or re.match(r'^\[(Ⅲ|Ⅳ)장과의 연결\]$', first): stop = True; continue
+    if re.match(r'^\[(Ⅰ|Ⅱ|Ⅲ|Ⅳ)장 핵심 정리\]$', first) or re.match(r'^\[(Ⅲ|Ⅳ|Ⅴ)장과의 연결\]$', first): stop = True; continue
     if CH == 3 and first == '참고문헌': box = '참고문헌'; continue
     text_lines = [x.strip() for x in p]
     m = re.match(SECRE, first)
-    if m and m.group(2).strip() in SECS and not in_summary:
-        i = SECS.index(m.group(2).strip())
+    if m and (m.group(2).strip() in SECS or CH == 4) and not in_summary:
+        i = int(m.group(1)) - 1 if CH == 4 else SECS.index(m.group(2).strip())
         post = dict(no=i + 1, title=NEW_TITLES[i], orig=m.group(2).strip(), sections=[]); posts.append(post)
         sec = None; box = None; continue
     if SUMMARK(first):
@@ -111,6 +121,8 @@ for p in paras:
         continue
     if post is None: continue
     if re.match(r'^\(.*\)$', first) and len(p) == 1 and sec is None: continue  # english subtitle
+    if CH == 4 and sec is None and not in_summary and re.match(r'^[A-Za-z(]', first) and len(p) <= 2: continue
+    if CH == 4 and in_summary and sec is None and len(p) == 1 and first == '신경발달장애의 임상적 이해와 기능적 프로파일을 현장에서 이해하는 기본 원칙': continue
     if in_summary and first == '신경발달을 바라보는 기본 임상 원칙': continue
     if re.match(r'^\(', first) and in_summary and sec is None and len(' '.join(text_lines)) < 200 and re.search(r'[A-Za-z]', first): continue
     ms = re.match(r'^(\d+-\d+)\.\s+(.+)$', first)
@@ -135,9 +147,9 @@ for p in paras:
     if not body: continue
     if box and EXCLUDE.search(box): continue
     if not box:
-        if post['no'] == 2 and sec['title'].startswith('영양과'): continue
+        if CH == 1 and post['no'] == 2 and sec['title'].startswith('영양과'): continue
         t = clean(join(body))
-        if re.search(r'조효소|보조인자', t) and post['no'] == 2: continue
+        if CH == 1 and re.search(r'조효소|보조인자', t) and post['no'] == 2: continue
         if in_summary: sec['easy'].append(t)
         else:
             if re.match(r'^\d+\)\s', t) and len(t) < 60: sec['detail'].append(t)
@@ -196,7 +208,7 @@ for p in paras:
 
 # ---------- HWPX: summaries + staff tips ----------
 H = [l.strip() for l in open(hwpx_txt, encoding='utf-8').read().split('\n') if l.strip()]
-if CH == 3:
+if CH in (3, 4):
     H2 = []
     for l in H:
         if H2 and not re.match(r'^(\d+\.|\d+-\d+\.|\d+절\.|\[|※|"|“|•|-|\d+\))', l) and not H2[-1].startswith('※'):
@@ -214,7 +226,7 @@ while i < len(H):
         t = []; j = i + 1
         while j < len(H) and not H[j].startswith('[') and not re.match(r'^\d+절|^\d-\d', H[j]):
             t.append(H[j]); j += 1
-        tips[curn] = (' '.join(x.strip('"“” ') for x in t) if CH != 3 else join([x for x in t]).strip('"“” ')).strip()
+        tips[curn] = (' '.join(x.strip('"“” ') for x in t) if CH not in (3, 4) else join([x for x in t]).strip('"“” ')).strip()
         i = j; continue
     ms = re.match(r'^\[(\d+)절 핵심 정리\]$', l)
     if ms:
