@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+_site/
+# 원본 강의 자료(HWP/PDF)는 저장소에 올리지 않습니다
+*.hwp
+*.hwpx
+*.pdf
