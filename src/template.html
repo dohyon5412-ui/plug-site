@@ -1,6 +1,6 @@
 <title>PLUG 자료실</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Do+Hyeon&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Do+Hyeon&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap">
 <style id="app-style">
 /* Layout: sticky logo header band, left category rail + reading column; rail becomes a drawer under 900px */
 :root{
@@ -286,12 +286,187 @@ mark{background:color-mix(in srgb,var(--accent) 55%,transparent);color:inherit;b
   .jump{top:calc(env(safe-area-inset-top,0px) + 61px)}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+/* ===== Apple-style design proposal v3: always light, clean white, glass cards ===== */
+:root.apple{
+  color-scheme:light;
+  --bg:#ffffff; --surface:#ffffff; --surface-2:#f5f5f7; --ink:#1d1d1f; --ink-2:#515154; --ink-3:#86868b;
+  --line:rgba(0,0,0,.07); --brand-ink:var(--brand);
+  --ok:#2b8a3e; --ok-soft:#e6f4ea; --bad:#c92a2a; --bad-soft:#fdecec;
+  --logo-l:block; --logo-d:none;
+  --f-display:"Apple SD Gothic Neo","Noto Sans KR","IBM Plex Sans KR",system-ui,sans-serif;
+  --f-body:"Apple SD Gothic Neo","Noto Sans KR","IBM Plex Sans KR",system-ui,sans-serif;
+  --radius:20px;
+  /* glass: light from top-left, soft shade toward bottom-right */
+  --page:#ffffff; --tint-base:#ffffff; --hover:rgba(15,23,42,.04); --jump-bg:rgba(255,255,255,.8); --stat-num:var(--brand);
+  --glass:linear-gradient(145deg,rgba(255,255,255,.86) 0%,rgba(247,249,252,.66) 55%,rgba(234,238,245,.6) 100%);
+  --glass-border:1px solid rgba(255,255,255,.9);
+  --glass-edge:0 0 0 1px rgba(15,23,42,.06);
+  --glass-hl:inset 1px 1px 0 rgba(255,255,255,1),inset -1px -1px 0 rgba(15,23,42,.045),inset -10px -12px 24px -14px rgba(15,23,42,.045);
+  --sh-1:0 1px 2px rgba(15,23,42,.04),3px 5px 12px rgba(15,23,42,.06),8px 12px 28px -8px rgba(15,23,42,.08);
+  --sh-2:0 2px 4px rgba(15,23,42,.05),6px 10px 22px rgba(15,23,42,.09),14px 22px 44px -12px rgba(15,23,42,.14);
+  --sh-hero:0 1px 2px rgba(15,23,42,.04),6px 10px 28px rgba(15,23,42,.08),20px 30px 64px -24px rgba(15,23,42,.20);
+  --sh-stat:2px 3px 8px rgba(15,23,42,.05),5px 8px 18px -6px rgba(15,23,42,.08);
+  --ease:cubic-bezier(.2,.8,.2,1);
+}
+@media (prefers-color-scheme: dark){:root.apple:not([data-theme="light"]){
+  color-scheme:dark;
+  --bg:#000000; --surface:#1c1c1e; --surface-2:#2c2c2e; --ink:#f5f5f7; --ink-2:#c7c7cc; --ink-3:#8e8e93;
+  --line:rgba(255,255,255,.1); --brand-ink:color-mix(in srgb,var(--brand) 45%,#ffffff);
+  --ok:#69db7c; --ok-soft:#14321f; --bad:#ff8787; --bad-soft:#3a1717;
+  --page:#000000; --tint-base:#1c1c1e; --hover:rgba(255,255,255,.06); --jump-bg:rgba(0,0,0,.72); --stat-num:var(--brand-ink);
+  --glass:linear-gradient(145deg,rgba(58,58,62,.62) 0%,rgba(36,36,40,.56) 55%,rgba(22,22,26,.6) 100%);
+  --glass-border:1px solid rgba(255,255,255,.07);
+  --glass-edge:0 0 0 1px rgba(255,255,255,.05);
+  --glass-hl:inset 1px 1px 0 rgba(255,255,255,.10),inset -1px -1px 0 rgba(0,0,0,.45),inset -10px -12px 24px -14px rgba(0,0,0,.45);
+  --sh-1:0 1px 2px rgba(0,0,0,.5),3px 5px 12px rgba(0,0,0,.45),8px 12px 28px -8px rgba(0,0,0,.6);
+  --sh-2:0 2px 4px rgba(0,0,0,.5),6px 10px 22px rgba(0,0,0,.55),14px 22px 44px -12px rgba(0,0,0,.7);
+  --sh-hero:0 1px 2px rgba(0,0,0,.5),6px 10px 28px rgba(0,0,0,.55),20px 30px 64px -24px rgba(0,0,0,.75);
+  --sh-stat:2px 3px 8px rgba(0,0,0,.45),5px 8px 18px -6px rgba(0,0,0,.55);}}
+:root.apple[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#000000; --surface:#1c1c1e; --surface-2:#2c2c2e; --ink:#f5f5f7; --ink-2:#c7c7cc; --ink-3:#8e8e93;
+  --line:rgba(255,255,255,.1); --brand-ink:color-mix(in srgb,var(--brand) 45%,#ffffff);
+  --ok:#69db7c; --ok-soft:#14321f; --bad:#ff8787; --bad-soft:#3a1717;
+  --page:#000000; --tint-base:#1c1c1e; --hover:rgba(255,255,255,.06); --jump-bg:rgba(0,0,0,.72); --stat-num:var(--brand-ink);
+  --glass:linear-gradient(145deg,rgba(58,58,62,.62) 0%,rgba(36,36,40,.56) 55%,rgba(22,22,26,.6) 100%);
+  --glass-border:1px solid rgba(255,255,255,.07);
+  --glass-edge:0 0 0 1px rgba(255,255,255,.05);
+  --glass-hl:inset 1px 1px 0 rgba(255,255,255,.10),inset -1px -1px 0 rgba(0,0,0,.45),inset -10px -12px 24px -14px rgba(0,0,0,.45);
+  --sh-1:0 1px 2px rgba(0,0,0,.5),3px 5px 12px rgba(0,0,0,.45),8px 12px 28px -8px rgba(0,0,0,.6);
+  --sh-2:0 2px 4px rgba(0,0,0,.5),6px 10px 22px rgba(0,0,0,.55),14px 22px 44px -12px rgba(0,0,0,.7);
+  --sh-hero:0 1px 2px rgba(0,0,0,.5),6px 10px 28px rgba(0,0,0,.55),20px 30px 64px -24px rgba(0,0,0,.75);
+  --sh-stat:2px 3px 8px rgba(0,0,0,.45),5px 8px 18px -6px rgba(0,0,0,.55);}
+.apple body{background:var(--page);color:var(--ink);letter-spacing:-.01em}
+
+/* header: brand-blue glass with white logo */
+.logo .logo-w{display:none}
+.apple .logo.has-w .logo-l,.apple .logo.has-w .logo-d{display:none}
+.apple .logo.has-w .logo-w{display:block}
+.apple .hdr{background:color-mix(in srgb,var(--brand) 86%,transparent);
+  -webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);
+  border-bottom:.5px solid rgba(255,255,255,.18)}
+.apple .hdr-search svg{color:rgba(255,255,255,.75)}
+.apple .hdr-search input{background:rgba(255,255,255,.16);border:0;height:40px;color:#fff;transition:box-shadow .2s var(--ease),background .2s}
+.apple .hdr-search input::placeholder{color:rgba(255,255,255,.72)}
+.apple .hdr-search input:focus{background:rgba(255,255,255,.24);box-shadow:0 0 0 4px rgba(255,255,255,.18);outline:none}
+.apple .hdr .icon-btn{border:0;background:rgba(255,255,255,.16);color:#fff;height:40px;min-width:40px}
+.apple .hdr .edit-btn{background:#fff;color:var(--brand)}
+@media (max-width:900px){.apple .hdr-search.open input{background:var(--brand)}}
+
+/* shared glass surface */
+.apple .hero,.apple .stat,.apple .card,.apple .blk,.apple .rail-home,.apple .rail-group.named,.apple .pager a,.apple .result,.apple .jump button{
+  background:var(--glass);border:var(--glass-border);
+  -webkit-backdrop-filter:saturate(160%) blur(18px);backdrop-filter:saturate(160%) blur(18px)}
+
+/* sidebar: inset grouped glass lists */
+.apple .rail-home{box-shadow:var(--glass-edge),var(--sh-1),var(--glass-hl)}
+.apple .rail a.cur{background:var(--brand);color:#fff}
+.apple .rail-posts a.cur{background:color-mix(in srgb,var(--brand) 12%,var(--tint-base));color:var(--brand-ink)}
+.apple .rail-group.named{border-radius:16px;box-shadow:var(--glass-edge),var(--sh-1),var(--glass-hl);padding:4px;margin-top:12px}
+.apple .rail-grp{border-radius:12px;font-weight:700;color:var(--ink)}
+.apple .rail-grp-body{border-left:0;margin:0 0 4px;padding-left:4px}
+.apple .rail-cat{border-radius:10px;font-weight:600}
+.apple .rail-posts{border-left:0;margin-left:22px;padding-left:0}
+.apple .rail a:hover,.apple .rail-grp:hover{background:var(--hover)}
+@media (max-width:900px){.apple .rail{background:var(--page)}}
+
+/* hero: glass card, no decoration */
+.apple .hero{border-radius:28px;padding:40px 40px 32px;box-shadow:var(--glass-edge),var(--sh-hero),var(--glass-hl)}
+.apple .hero::after{display:none}
+.apple .hero::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:linear-gradient(180deg,rgba(255,255,255,.7) 0%,rgba(255,255,255,0) 38%)}
+.apple .eyebrow{display:inline-flex;align-items:center;padding:5px 12px;border-radius:999px;font-size:12.5px;letter-spacing:0;
+  background:color-mix(in srgb,var(--brand) 10%,var(--tint-base));color:var(--brand-ink);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--brand) 16%,transparent)}
+.apple .hero h1{font-weight:800;letter-spacing:-.035em;font-size:clamp(32px,4.6vw,48px);margin:16px 0 12px;line-height:1.15;color:var(--ink)}
+.apple .hero p{font-size:17px;line-height:1.65;color:var(--ink-2)}
+.apple .stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:28px}
+.apple .stat{border-radius:16px;padding:14px 16px;box-shadow:var(--glass-edge),var(--sh-stat),var(--glass-hl);display:flex;flex-direction:column;gap:2px}
+.apple .stat b{font-family:var(--f-display);font-weight:800;font-size:28px;letter-spacing:-.03em;margin:0;line-height:1.1;color:var(--stat-num)}
+.apple .stat span{font-size:13px;color:var(--ink-3)}
+
+/* section headings */
+.apple .grp-h{font-weight:800;letter-spacing:-.03em;border-bottom:0;font-size:clamp(28px,3.6vw,36px);margin:56px 0 -14px;padding-bottom:0;color:var(--ink)}
+.apple .sec-h h2{font-weight:700;letter-spacing:-.025em;font-size:22px}
+.apple .sec-h p{color:var(--ink-3)}
+.apple .sec-h a{padding:6px 12px;border-radius:999px;background:color-mix(in srgb,var(--brand) 9%,var(--tint-base));font-size:13px;color:var(--brand-ink)}
+
+/* cards */
+.apple .cards{gap:16px}
+.apple .card{border-radius:20px;padding:20px 20px 18px;box-shadow:var(--glass-edge),var(--sh-1),var(--glass-hl);transition:transform .35s var(--ease),box-shadow .35s var(--ease)}
+.apple .card:hover{transform:translateY(-4px);box-shadow:var(--glass-edge),var(--sh-2),var(--glass-hl)}
+.apple .card h3{font-weight:700;letter-spacing:-.02em;font-size:18px;color:var(--ink)}
+.apple .card ol{color:var(--ink-3)}
+
+/* reading view */
+.apple .page-h h1,.apple .post-h h1{font-weight:800;letter-spacing:-.035em;color:var(--ink)}
+.apple .post-h{border-bottom:0}
+.apple .post-h .intro{font-size:17px;color:var(--ink-2)}
+.apple .jump{background:var(--jump-bg);-webkit-backdrop-filter:saturate(180%) blur(16px);backdrop-filter:saturate(180%) blur(16px)}
+.apple .jump button{box-shadow:var(--glass-edge),var(--sh-stat)}
+.apple .lesson-h .no{border-radius:999px}
+.apple .lesson-h h2{font-weight:800;letter-spacing:-.025em;color:var(--ink)}
+.apple .blk{border-radius:20px;box-shadow:var(--glass-edge),var(--sh-1),var(--glass-hl)}
+.apple .blk h3{font-size:13px;letter-spacing:.02em}
+.apple .blk h3::before{width:8px;height:8px;border-radius:50%;background:var(--brand)}
+.apple .chips li{border-radius:999px;background:var(--surface-2)}
+.apple .opt{border:0;background:var(--surface-2);border-radius:14px;transition:transform .2s var(--ease),background .2s}
+.apple .opt:hover:not([disabled]){transform:scale(1.01);background:color-mix(in srgb,var(--brand) 7%,var(--surface-2))}
+.apple .explain{border:0;background:var(--surface-2);border-radius:14px}
+.apple .pager a,.apple .result{border-radius:18px;box-shadow:var(--glass-edge),var(--sh-1),var(--glass-hl)}
+.apple .btn{border-radius:999px}
+.apple mark{background:color-mix(in srgb,var(--brand) 16%,transparent)}
+
+@media (max-width:600px){
+  .apple .hero{padding:28px 22px 24px;border-radius:24px}
+  .apple .stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .apple .hero p{font-size:16px}
+}
+@media (prefers-reduced-motion:reduce){.apple .card:hover,.apple .opt:hover:not([disabled]){transform:none}}
+
+
+@media (prefers-color-scheme: dark){:root.apple:not([data-theme="light"]) .hero::before{background:linear-gradient(180deg,rgba(255,255,255,.06) 0%,rgba(255,255,255,0) 40%)}
+  :root.apple:not([data-theme="light"]) .hdr{background:color-mix(in srgb,var(--brand) 62%,rgba(0,0,0,.55))}
+  :root.apple:not([data-theme="light"]) .opt.right{background:var(--ok-soft)} }
+:root.apple[data-theme="dark"] .hero::before{background:linear-gradient(180deg,rgba(255,255,255,.06) 0%,rgba(255,255,255,0) 40%)}
+:root.apple[data-theme="dark"] .hdr{background:color-mix(in srgb,var(--brand) 62%,rgba(0,0,0,.55))}
+
+/* ===== v5: refined, dimensional blue header ===== */
+:root.apple{
+  --hdr-top:color-mix(in srgb,var(--brand) 78%,#6f9bff 22%);
+  --hdr-mid:var(--brand);
+  --hdr-bot:color-mix(in srgb,var(--brand) 82%,#06123a 18%);
+}
+.apple .hdr{
+  background:
+    radial-gradient(120% 160% at 12% -60%,rgba(255,255,255,.28) 0%,rgba(255,255,255,0) 55%),
+    linear-gradient(180deg,var(--hdr-top) 0%,var(--hdr-mid) 55%,var(--hdr-bot) 100%);
+  border-bottom:0;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.28),inset 0 -1px 0 rgba(0,0,0,.22),
+    0 1px 0 rgba(6,18,58,.08),0 8px 24px -10px color-mix(in srgb,var(--brand) 60%,transparent)}
+.apple .hdr-search input{background:rgba(255,255,255,.14);
+  box-shadow:inset 0 1px 2px rgba(6,18,58,.25),inset 0 0 0 1px rgba(255,255,255,.14),0 1px 0 rgba(255,255,255,.12)}
+.apple .hdr-search input:focus{background:rgba(255,255,255,.22);box-shadow:inset 0 1px 2px rgba(6,18,58,.2),0 0 0 3px rgba(255,255,255,.28)}
+.apple .hdr .icon-btn{background:linear-gradient(180deg,rgba(255,255,255,.22),rgba(255,255,255,.10));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 2px 6px -2px rgba(6,18,58,.35)}
+.apple .hdr .edit-btn{background:linear-gradient(180deg,#ffffff,#eef2fb);color:var(--brand);
+  box-shadow:inset 0 1px 0 #fff,0 3px 10px -3px rgba(6,18,58,.45)}
+.apple .logo img{filter:drop-shadow(0 1px 1px rgba(6,18,58,.25))}
+@media (prefers-color-scheme: dark){:root.apple:not([data-theme="light"]){
+  --hdr-top:color-mix(in srgb,var(--brand) 70%,#000 30%);
+  --hdr-mid:color-mix(in srgb,var(--brand) 55%,#000 45%);
+  --hdr-bot:color-mix(in srgb,var(--brand) 38%,#000 62%)}
+  :root.apple:not([data-theme="light"]) .hdr{background:radial-gradient(120% 160% at 12% -60%,rgba(255,255,255,.14) 0%,rgba(255,255,255,0) 55%),linear-gradient(180deg,var(--hdr-top) 0%,var(--hdr-mid) 55%,var(--hdr-bot) 100%);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.14),inset 0 -1px 0 rgba(0,0,0,.4),0 8px 24px -10px rgba(0,0,0,.8)}}
+:root.apple[data-theme="dark"]{--hdr-top:color-mix(in srgb,var(--brand) 70%,#000 30%);--hdr-mid:color-mix(in srgb,var(--brand) 55%,#000 45%);--hdr-bot:color-mix(in srgb,var(--brand) 38%,#000 62%)}
+:root.apple[data-theme="dark"] .hdr{background:radial-gradient(120% 160% at 12% -60%,rgba(255,255,255,.14) 0%,rgba(255,255,255,0) 55%),linear-gradient(180deg,var(--hdr-top) 0%,var(--hdr-mid) 55%,var(--hdr-bot) 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.14),inset 0 -1px 0 rgba(0,0,0,.4),0 8px 24px -10px rgba(0,0,0,.8)}
 </style>
 <div id="root"></div>
 <script id="site-data" type="application/json">__SITE_DATA__</script>
 <script id="app">
 (function(){
 "use strict";
+document.documentElement.classList.add('apple');
 var RESET='<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style></head><body>';
 var dataEl=document.getElementById('site-data');
 var SAVED=dataEl.textContent;
@@ -361,7 +536,7 @@ function header(){
   var s=state.site;
   return '<header class="hdr"><div class="hdr-in gutter">'+
    '<button class="icon-btn menu-btn" data-act="menu" aria-label="메뉴 열기">'+IC.menu+'</button>'+
-   '<a class="logo" href="#" aria-label="'+esc(s.name)+' 홈"><img class="logo-l" src="'+esc(s.logo)+'" alt="'+esc(s.name+' — '+s.tagline)+'"><img class="logo-d" src="'+esc(s.logoDark||s.logo)+'" alt="'+esc(s.name+' — '+s.tagline)+'"></a>'+
+   '<a class="logo'+(s.logoWhite?' has-w':'')+'" href="#" aria-label="'+esc(s.name)+' 홈"><img class="logo-l" src="'+esc(s.logo)+'" alt="'+esc(s.name+' — '+s.tagline)+'"><img class="logo-d" src="'+esc(s.logoDark||s.logo)+'" alt="'+esc(s.name+' — '+s.tagline)+'">'+(s.logoWhite?'<img class="logo-w" src="'+esc(s.logoWhite)+'" alt="'+esc(s.name+' — '+s.tagline)+'">':'')+'</a>'+
    '<div class="hdr-search'+(ui.searchOpen?' open':'')+'">'+IC.search+'<input id="q" type="search" placeholder="자료 검색 (예: 고유수용감각, 게슈탈트)" value="'+esc(ui.q)+'" autocomplete="off" aria-label="자료 검색"></div>'+
    '<button class="icon-btn search-toggle" data-act="search-toggle" aria-label="검색">'+IC.search+'</button>'+
    (ui.canEdit?'<button class="icon-btn edit-btn'+(ui.edit?' on':'')+'" data-act="toggle-edit">'+IC.pen+'<span class="tx">'+(ui.edit?'편집 중':'편집 모드')+'</span></button>':'')+
@@ -655,7 +830,7 @@ function buildDocument(){
   var style=document.getElementById('app-style').outerHTML;
   var app=document.getElementById('app').outerHTML;
   var json=JSON.stringify(state).replace(/</g,'\\u003c');
-  var head='<title>PLUG 자료실</title>\n<meta name="claude:viewport-fit-sides" content="cover">\n<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Do+Hyeon&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">\n';
+  var head='<title>PLUG 자료실</title>\n<meta name="claude:viewport-fit-sides" content="cover">\n<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Do+Hyeon&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap">\n';
   return RESET+head+style+'\n<div id="root"></div>\n<script id="site-data" type="application/json">'+json+'<'+'/script>\n'+app+'</body></html>';
 }
 function save(){
@@ -735,7 +910,7 @@ root.addEventListener('change',function(ev){
   var t=ev.target;
   if(t.id==='logo-file'&&t.files&&t.files[0]){var f=t.files[0];
     if(f.size>800*1024){toast('800KB 이하 이미지만 쓸 수 있어요.');return}
-    var r=new FileReader();r.onload=function(){state.site.logo=r.result;state.site.logoDark='';changed(true)};r.readAsDataURL(f)}
+    var r=new FileReader();r.onload=function(){state.site.logo=r.result;state.site.logoDark='';state.site.logoWhite='';changed(true)};r.readAsDataURL(f)}
 });
 root.addEventListener('keydown',function(ev){if(ev.key==='Escape'){if(ui.sheet){ui.sheet=null;render()}else if(ui.menu){ui.menu=false;render()}}});
 root.addEventListener('search',function(ev){if(ev.target.id==='q'){ui.q=ev.target.value;render()}},true);
